@@ -1,11 +1,14 @@
 import PageShell from "@/components/PageShell";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
-import { Settings, Heart, Calendar, Star, ChevronRight, LogOut, Bell, HelpCircle, Camera } from "lucide-react";
+import { Settings, Heart, Calendar, Star, ChevronRight, LogOut, Bell, HelpCircle, Camera, MapPin, ImageIcon, DollarSign, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
-const menuSections = [
+type Role = "user" | "photographer";
+
+const userMenuSections = [
   {
     title: "Activity",
     items: [
@@ -24,12 +27,43 @@ const menuSections = [
   },
 ];
 
+const photographerMenuSections = [
+  {
+    title: "Business",
+    items: [
+      { icon: Calendar, label: "Upcoming Shoots", to: "/bookings", badge: "5" },
+      { icon: DollarSign, label: "Earnings", to: "/earnings" },
+      { icon: ImageIcon, label: "My Portfolio", to: "/portfolio" },
+      { icon: Users, label: "Client List", to: "/clients" },
+    ],
+  },
+  {
+    title: "Settings",
+    items: [
+      { icon: Bell, label: "Notifications", to: "/notifications" },
+      { icon: Settings, label: "Account Settings", to: "/settings" },
+      { icon: HelpCircle, label: "Help & Support", to: "/support" },
+    ],
+  },
+];
+
 const Profile = () => {
+  // In production, this would come from auth context
+  const [role, setRole] = useState<Role>("user");
+  const menuSections = role === "user" ? userMenuSections : photographerMenuSections;
+
   return (
     <>
       <PageShell>
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="font-display text-3xl font-bold text-foreground mb-6">Profile</h1>
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
+          <h1 className="font-display text-3xl font-bold text-foreground">Profile</h1>
+          {/* Role toggle for demo */}
+          <button
+            onClick={() => setRole(role === "user" ? "photographer" : "user")}
+            className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+          >
+            {role === "user" ? "Switch to Photographer" : "Switch to User"}
+          </button>
         </motion.div>
 
         {/* User card */}
@@ -47,8 +81,17 @@ const Profile = () => {
               <h2 className="font-display font-bold text-foreground text-xl">John Doe</h2>
               <p className="text-sm text-muted-foreground truncate">john.doe@email.com</p>
               <div className="flex items-center gap-1 mt-1">
-                <Camera className="w-3 h-3 text-primary" />
-                <span className="text-xs text-primary font-medium">Premium Member</span>
+                {role === "user" ? (
+                  <>
+                    <Camera className="w-3 h-3 text-primary" />
+                    <span className="text-xs text-primary font-medium">Premium Member</span>
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="w-3 h-3 text-primary" />
+                    <span className="text-xs text-primary font-medium">New York • Wedding Photographer</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -64,11 +107,18 @@ const Profile = () => {
           transition={{ delay: 0.15 }}
           className="grid grid-cols-3 gap-3 mb-8"
         >
-          {[
-            { label: "Bookings", value: "12" },
-            { label: "Reviews", value: "8" },
-            { label: "Saved", value: "24" },
-          ].map((stat, i) => (
+          {(role === "user"
+            ? [
+                { label: "Bookings", value: "12" },
+                { label: "Reviews", value: "8" },
+                { label: "Saved", value: "24" },
+              ]
+            : [
+                { label: "Shoots", value: "48" },
+                { label: "Rating", value: "4.9" },
+                { label: "Earned", value: "$6.2k" },
+              ]
+          ).map((stat, i) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 10 }}
