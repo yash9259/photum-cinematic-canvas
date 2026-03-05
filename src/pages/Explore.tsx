@@ -3,10 +3,11 @@ import BottomNav from "@/components/BottomNav";
 import PhotographerCard from "@/components/PhotographerCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
-const categories = ["All", "Wedding", "Portrait", "Fashion", "Event", "Nature", "Street"];
+const categories = ["All", "Wedding", "Portrait", "Fashion", "Event", "Nature", "Street", "Product"];
 
 const photographers = [
   { id: "1", name: "Sarah Mitchell", specialty: "Wedding", location: "New York", rating: 4.9, price: "$250/hr", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=300&fit=crop" },
@@ -18,6 +19,8 @@ const photographers = [
 ];
 
 const Explore = () => {
+  const [activeCategory, setActiveCategory] = useState(0);
+
   return (
     <>
       <PageShell>
@@ -27,34 +30,63 @@ const Explore = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <h1 className="font-display text-2xl font-bold text-foreground mb-1">Explore</h1>
+          <h1 className="font-display text-3xl font-bold text-foreground mb-1">Explore</h1>
           <p className="text-sm text-muted-foreground">Find the perfect photographer for you</p>
         </motion.div>
 
         {/* Search */}
-        <div className="flex gap-2 mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="flex gap-2 mb-6"
+        >
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Search photographers..." className="pl-10" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input placeholder="Search photographers, styles..." className="pl-10 h-12" />
           </div>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" className="h-12 w-12 shrink-0">
             <SlidersHorizontal className="w-4 h-4" />
           </Button>
-        </div>
+        </motion.div>
 
         {/* Categories */}
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-6 -mx-5 px-5 scrollbar-hide">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="flex gap-2 overflow-x-auto pb-4 mb-6 -mx-5 px-5 scrollbar-hide"
+        >
           {categories.map((cat, i) => (
-            <Button
+            <button
               key={cat}
-              variant={i === 0 ? "default" : "outline"}
-              size="sm"
-              className="shrink-0"
+              onClick={() => setActiveCategory(i)}
+              className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                activeCategory === i
+                  ? "bg-primary text-primary-foreground shadow-[0_0_20px_hsl(var(--primary)/0.3)]"
+                  : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
+              }`}
             >
               {cat}
-            </Button>
+            </button>
           ))}
-        </div>
+        </motion.div>
+
+        {/* Featured */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="glass rounded-2xl p-4 mb-6 flex items-center gap-4"
+        >
+          <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <TrendingUp className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-display font-semibold text-foreground text-sm">Trending This Week</h3>
+            <p className="text-xs text-muted-foreground truncate">Wedding & portrait photographers are in high demand</p>
+          </div>
+        </motion.div>
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -63,7 +95,7 @@ const Explore = () => {
               key={p.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
+              transition={{ delay: 0.2 + i * 0.06 }}
             >
               <PhotographerCard {...p} />
             </motion.div>
